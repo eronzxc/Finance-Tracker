@@ -428,7 +428,7 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
     }
 
     /* ─── CONTENT CANVAS ─────────────────────────────────────────────── */
-    .canvas { padding: 32px 28px 24px; display: flex; flex-direction: column; gap: 20px; }
+    .canvas { padding: 24px 20px 24px; display: flex; flex-direction: column; gap: 16px; }
 
     /* ─── TOAST ──────────────────────────────────────────────────────── */
     .toast {
@@ -444,7 +444,7 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
     @keyframes fadeDown { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
 
     /* ─── PAGE TITLE ROW ─────────────────────────────────────────────── */
-    .page-heading h1 { font-size: 2rem; font-weight: 800; letter-spacing: -.04em; }
+    .page-heading h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: -.04em; }
     .page-heading p  { font-size: .82rem; color: var(--text-2); margin-top: 4px; }
 
     /* ─── FILTER PILLS ───────────────────────────────────────────────── */
@@ -464,13 +464,13 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
     /* ─── MAIN GRID ──────────────────────────────────────────────────── */
     .dashboard-grid {
         display: grid;
-        grid-template-columns: 1fr 340px;
-        gap: 20px;
+        grid-template-columns: 1fr 300px;
+        gap: 16px;
         align-items: start;
     }
-    .left-col { display: flex; flex-direction: column; gap: 20px; }
+    .left-col { display: flex; flex-direction: column; gap: 16px; }
     .right-col {
-        display: flex; flex-direction: column; gap: 14px;
+        display: flex; flex-direction: column; gap: 12px;
         position: sticky;
         top: 24px;
         max-height: calc(100vh - 48px);
@@ -503,15 +503,15 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
 
     /* ─── REVENUE FLOW CHART ─────────────────────────────────────────── */
     .chart-area { padding: 0 20px 20px; position: relative; }
-    .chart-canvas-wrap { position: relative; height: 160px; }
+    .chart-canvas-wrap { position: relative; height: 140px; }
     canvas#revenueChart { width: 100% !important; height: 100% !important; }
 
     /* ─── BOTTOM ROW ─────────────────────────────────────────────────── */
-    .bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
     .donut-wrap {
         display: flex; align-items: center; gap: 16px;
-        padding: 16px 20px 20px;
+        padding: 12px 16px 16px;
     }
     .donut-chart-wrap { position: relative; width: 120px; height: 120px; flex-shrink: 0; }
     canvas#donutChart { width: 120px !important; height: 120px !important; }
@@ -528,9 +528,9 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
     .legend-name { font-size: .75rem; color: var(--text-2); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .legend-val  { font-size: .75rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 
-    .ie-card { padding: 18px 20px; display: flex; flex-direction: column; gap: 10px; }
+    .ie-card { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
     .ie-label  { font-size: .82rem; font-weight: 700; color: var(--text-2); }
-    .ie-amount { font-size: 1.55rem; font-weight: 800; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+    .ie-amount { font-size: 1.25rem; font-weight: 800; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
     .ie-sub    { font-size: .72rem; color: var(--text-2); }
     .ie-badge  {
         display: inline-flex; align-items: center; gap: 4px;
@@ -547,7 +547,7 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
         background: linear-gradient(135deg, #1a3a6b 0%, #0f2150 40%, #0d1a3e 100%);
         border: 1px solid rgba(59,130,246,.2);
         border-radius: var(--r-lg);
-        padding: 18px 20px;
+        padding: 16px 18px;
         position: relative;
         overflow: hidden;
     }
@@ -579,7 +579,7 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
     .bc-plus-btn:hover { background: rgba(255,255,255,.25); }
     .bc-plus-btn svg { width: 14px; height: 14px; stroke: #fff; stroke-width: 2.5; }
     .bc-amount {
-        font-size: 2rem; font-weight: 800; letter-spacing: -.05em;
+        font-size: 1.6rem; font-weight: 800; letter-spacing: -.05em;
         font-variant-numeric: tabular-nums;
         position: relative; z-index: 1;
         line-height: 1;
@@ -587,7 +587,7 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
     .bc-amount.positive { color: #fff; }
     .bc-amount.negative { color: var(--expense-clr); }
     .bc-sub { font-size: .72rem; color: rgba(255,255,255,.4); margin-top: 6px; position: relative; z-index: 1; }
-    .bc-chips { display: flex; gap: 8px; margin-top: 12px; position: relative; z-index: 1; }
+    .bc-chips { display: flex; gap: 6px; margin-top: 10px; position: relative; z-index: 1; }
     .bc-chip {
         flex: 1; padding: 8px 10px;
         background: rgba(255,255,255,.07);
@@ -604,7 +604,7 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
     .tx-list { display: flex; flex-direction: column; }
     .tx-row {
         display: flex; align-items: center; gap: 12px;
-        padding: 12px 20px;
+        padding: 10px 16px;
         border-bottom: 1px solid var(--border);
         transition: background .12s;
     }
@@ -712,9 +712,9 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
     .save-btn svg    { width: 14px; height: 14px; }
 
     /* ─── RESPONSIVE ─────────────────────────────────────────────────── */
-    @media (max-width: 960px) {
+    @media (max-width: 1024px) {
         .dashboard-grid { grid-template-columns: 1fr; }
-        .right-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .right-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     }
     @media (max-width: 640px) {
         .sidebar { display: none; }
