@@ -464,22 +464,12 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
     /* ─── MAIN GRID ──────────────────────────────────────────────────── */
     .dashboard-grid {
         display: grid;
-        grid-template-columns: 1fr 340px;
+        grid-template-columns: 1fr 320px;
         gap: 20px;
         align-items: start;
     }
-    .left-col { display: flex; flex-direction: column; gap: 20px; }
-    .right-col {
-        display: flex; flex-direction: column; gap: 14px;
-        position: sticky;
-        top: 24px;
-        max-height: calc(100vh - 48px);
-        overflow-y: auto;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-        padding-right: 2px;
-    }
-    .right-col::-webkit-scrollbar { display: none; }
+    .left-col  { display: flex; flex-direction: column; gap: 20px; }
+    .right-col { display: flex; flex-direction: column; gap: 20px; }
 
     /* ─── GLASS PANEL ────────────────────────────────────────────────── */
     .panel {
@@ -491,7 +481,7 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
     }
     .panel-head {
         display: flex; align-items: center; justify-content: space-between;
-        padding: 14px 18px 12px;
+        padding: 18px 20px 14px;
     }
     .panel-head h2 { font-size: .92rem; font-weight: 700; }
     .view-all {
@@ -547,7 +537,7 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
         background: linear-gradient(135deg, #1a3a6b 0%, #0f2150 40%, #0d1a3e 100%);
         border: 1px solid rgba(59,130,246,.2);
         border-radius: var(--r-lg);
-        padding: 18px 20px;
+        padding: 22px;
         position: relative;
         overflow: hidden;
     }
@@ -587,7 +577,7 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
     .bc-amount.positive { color: #fff; }
     .bc-amount.negative { color: var(--expense-clr); }
     .bc-sub { font-size: .72rem; color: rgba(255,255,255,.4); margin-top: 6px; position: relative; z-index: 1; }
-    .bc-chips { display: flex; gap: 8px; margin-top: 12px; position: relative; z-index: 1; }
+    .bc-chips { display: flex; gap: 8px; margin-top: 16px; position: relative; z-index: 1; }
     .bc-chip {
         flex: 1; padding: 8px 10px;
         background: rgba(255,255,255,.07);
@@ -661,16 +651,15 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
     .tx-no-results.visible { display: block; }
 
     /* ─── ADD ENTRY PANEL ────────────────────────────────────────────── */
-    .add-panel { padding: 16px; }
-    .field { margin-bottom: 10px; }
+    .add-panel { padding: 20px; }
+    .field { margin-bottom: 14px; }
     .field label {
-        display: block; font-size: .68rem; font-weight: 600;
-        color: var(--text-2); margin-bottom: 5px; letter-spacing: .04em;
-        text-transform: uppercase;
+        display: block; font-size: .72rem; font-weight: 600;
+        color: var(--text-2); margin-bottom: 6px; letter-spacing: .02em;
     }
     .field label .req { color: var(--blue-light); margin-left: 2px; }
     .field input, .field select {
-        width: 100%; padding: 8px 12px;
+        width: 100%; padding: 9px 13px;
         background: rgba(255,255,255,.05);
         border: 1px solid var(--border);
         border-radius: var(--r-sm);
@@ -705,7 +694,7 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
         cursor: pointer; letter-spacing: .01em;
         display: flex; align-items: center; justify-content: center; gap: 7px;
         transition: opacity .15s, transform .1s, box-shadow .15s;
-        margin-top: 12px;
+        margin-top: 18px;
     }
     .save-btn:hover  { opacity: .9; box-shadow: 0 6px 20px var(--blue-glow); }
     .save-btn:active { transform: scale(.98); }
