@@ -152,6 +152,15 @@ if (empty($transactions)) {
 usort($notifications, fn($a, $b) => strcmp($b['date'], $a['date']));
 
 $total_count = count($notifications);
+
+// ── SIDE PANEL SUMMARY DATA ─────────────────────────────────────────────
+$type_counts = ['info' => 0, 'warning' => 0, 'success' => 0];
+foreach ($notifications as $n) {
+    if (isset($type_counts[$n['type']])) $type_counts[$n['type']]++;
+}
+
+$month_net = $this_month['income'] - $this_month['expense'];
+$prev_expense_for_diff = $prev_month['expense'] ?? 0;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -309,7 +318,47 @@ $total_count = count($notifications);
 
     /* ─── MAIN WRAPPER ───────────────────────────────────────────────── */
     .main { margin-left: 72px; flex: 1; display: flex; flex-direction: column; position: relative; z-index: 1; transition: margin-left .28s cubic-bezier(.4,0,.2,1); }
-    .canvas { padding: 18px 20px 40px; display: flex; flex-direction: column; gap: 16px; max-width: 760px; }
+    .canvas { padding: 18px 20px 40px; display: flex; flex-direction: column; gap: 16px; max-width: 1180px; }
+
+    /* ─── TWO-COLUMN LAYOUT ───────────────────────────────────────────── */
+    .notif-grid { display: grid; grid-template-columns: 1fr 300px; gap: 16px; align-items: start; }
+    .notif-main-col { min-width: 0; }
+    .notif-side-col { display: flex; flex-direction: column; gap: 12px; position: sticky; top: 24px; }
+
+    /* ─── THIS MONTH MINI CARD (right column) ────────────────────────── */
+    .month-card {
+        background: linear-gradient(135deg, #1a3a6b 0%, #0f2150 40%, #0d1a3e 100%);
+        border: 1px solid rgba(59,130,246,.2);
+        border-radius: var(--r-lg);
+        padding: 16px 18px;
+        position: relative; overflow: hidden;
+    }
+    .month-card::before { content: ''; position: absolute; top: -40px; right: -40px; width: 160px; height: 160px; background: radial-gradient(circle, rgba(59,130,246,.25) 0%, transparent 70%); pointer-events: none; }
+    .month-card-label { font-size: .68rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: rgba(255,255,255,.5); position: relative; z-index: 1; }
+    .month-card-amt { font-size: 1.5rem; font-weight: 800; letter-spacing: -.04em; margin-top: 6px; position: relative; z-index: 1; font-variant-numeric: tabular-nums; }
+    .month-card-amt.negative { color: var(--expense-clr); }
+    .month-card-chips { display: flex; gap: 6px; margin-top: 12px; position: relative; z-index: 1; }
+    .month-chip { flex: 1; padding: 8px 10px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1); border-radius: var(--r-sm); text-align: center; }
+    .month-chip .mc-lbl { font-size: .6rem; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: .06em; }
+    .month-chip .mc-val { font-size: .8rem; font-weight: 700; margin-top: 3px; font-variant-numeric: tabular-nums; }
+    .month-chip.inc .mc-val { color: var(--income-clr); }
+    .month-chip.exp .mc-val { color: var(--expense-clr); }
+
+    /* ─── INSIGHT BREAKDOWN (right column) ───────────────────────────── */
+    .breakdown-list { padding: 4px 0; }
+    .breakdown-row { display: flex; align-items: center; gap: 10px; padding: 11px 20px; }
+    .breakdown-row:not(:last-child) { border-bottom: 1px solid var(--border); }
+    .breakdown-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .breakdown-dot.info    { background: var(--blue-light); }
+    .breakdown-dot.warning { background: var(--expense-clr); }
+    .breakdown-dot.success { background: var(--income-clr); }
+    .breakdown-name { flex: 1; font-size: .78rem; color: var(--text-2); }
+    .breakdown-count { font-size: .8rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+    @media (max-width: 1024px) {
+        .notif-grid { grid-template-columns: 1fr; }
+        .notif-side-col { position: static; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    }
 
     /* ─── PAGE TOP ROW ───────────────────────────────────────────────── */
     .page-top-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
@@ -408,6 +457,7 @@ $total_count = count($notifications);
         .main { margin-left: 0; }
         .canvas { padding: 16px; max-width: 100%; }
         .notif-top { flex-direction: column; gap: 2px; }
+        .notif-side-col { grid-template-columns: 1fr; }
     }
     </style>
 </head>
@@ -481,46 +531,103 @@ $total_count = count($notifications);
         </div>
     </div>
 
-    <!-- Notifications panel -->
-    <div class="panel">
-        <div class="panel-head">
-            <div>
-                <h2>Your Notifications</h2>
-                <p><span id="unreadCount"><?php echo $total_count; ?></span> unread</p>
-            </div>
-            <button class="mark-all-btn" id="markAllBtn" type="button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-                Mark all as read
-            </button>
-        </div>
+    <!-- Notifications + side summary -->
+    <div class="notif-grid">
 
-        <div class="notif-list" id="notifList">
-            <?php foreach ($notifications as $n): ?>
-            <div class="notif-card" data-id="<?php echo htmlspecialchars($n['id']); ?>">
-                <div class="notif-icon <?php echo htmlspecialchars($n['type']); ?>">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><?php echo $icons[$n['icon']]; ?></svg>
-                </div>
-                <div class="notif-body">
-                    <div class="notif-top">
-                        <h3 class="notif-title"><?php echo htmlspecialchars($n['title']); ?></h3>
-                        <span class="notif-date"><?php echo date('M j', strtotime($n['date'])); ?></span>
+        <!-- LEFT: Notifications panel -->
+        <div class="notif-main-col">
+            <div class="panel">
+                <div class="panel-head">
+                    <div>
+                        <h2>Your Notifications</h2>
+                        <p><span id="unreadCount"><?php echo $total_count; ?></span> unread</p>
                     </div>
-                    <p class="notif-msg"><?php echo htmlspecialchars($n['message']); ?></p>
-                </div>
-                <div class="notif-side">
-                    <span class="notif-unread-dot"></span>
-                    <button class="notif-read-btn" title="Mark as read" type="button">
+                    <button class="mark-all-btn" id="markAllBtn" type="button">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        Mark all as read
                     </button>
                 </div>
+
+                <div class="notif-list" id="notifList">
+                    <?php foreach ($notifications as $n): ?>
+                    <div class="notif-card" data-id="<?php echo htmlspecialchars($n['id']); ?>">
+                        <div class="notif-icon <?php echo htmlspecialchars($n['type']); ?>">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><?php echo $icons[$n['icon']]; ?></svg>
+                        </div>
+                        <div class="notif-body">
+                            <div class="notif-top">
+                                <h3 class="notif-title"><?php echo htmlspecialchars($n['title']); ?></h3>
+                                <span class="notif-date"><?php echo date('M j', strtotime($n['date'])); ?></span>
+                            </div>
+                            <p class="notif-msg"><?php echo htmlspecialchars($n['message']); ?></p>
+                        </div>
+                        <div class="notif-side">
+                            <span class="notif-unread-dot"></span>
+                            <button class="notif-read-btn" title="Mark as read" type="button">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+
+                <div class="empty-state" id="emptyState">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                    <p>No notifications right now. Log a few transactions and check back for fresh insights.</p>
+                </div>
             </div>
-            <?php endforeach; ?>
         </div>
 
-        <div class="empty-state" id="emptyState">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-            <p>No notifications right now. Log a few transactions and check back for fresh insights.</p>
+        <!-- RIGHT: Summary sidebar -->
+        <div class="notif-side-col">
+
+            <!-- This Month mini balance card -->
+            <div class="month-card">
+                <div class="month-card-label"><?php echo date('F Y'); ?></div>
+                <div class="month-card-amt <?php echo $month_net < 0 ? 'negative' : ''; ?>">
+                    <?php echo ($month_net < 0 ? '-' : '') . '₱' . number_format(abs($month_net), 2); ?>
+                </div>
+                <div class="month-card-chips">
+                    <div class="month-chip inc">
+                        <div class="mc-lbl">Income</div>
+                        <div class="mc-val">₱<?php echo number_format($this_month['income'], 0); ?></div>
+                    </div>
+                    <div class="month-chip exp">
+                        <div class="mc-lbl">Expense</div>
+                        <div class="mc-val">₱<?php echo number_format($this_month['expense'], 0); ?></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Insight type breakdown -->
+            <div class="panel">
+                <div class="panel-head">
+                    <div>
+                        <h2>Insight Breakdown</h2>
+                        <p>By category, this list</p>
+                    </div>
+                </div>
+                <div class="breakdown-list">
+                    <div class="breakdown-row">
+                        <span class="breakdown-dot info"></span>
+                        <span class="breakdown-name">Informational</span>
+                        <span class="breakdown-count"><?php echo $type_counts['info']; ?></span>
+                    </div>
+                    <div class="breakdown-row">
+                        <span class="breakdown-dot warning"></span>
+                        <span class="breakdown-name">Warnings</span>
+                        <span class="breakdown-count"><?php echo $type_counts['warning']; ?></span>
+                    </div>
+                    <div class="breakdown-row">
+                        <span class="breakdown-dot success"></span>
+                        <span class="breakdown-name">Positive</span>
+                        <span class="breakdown-count"><?php echo $type_counts['success']; ?></span>
+                    </div>
+                </div>
+            </div>
+
         </div>
+
     </div>
 
 </div>
