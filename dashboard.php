@@ -428,7 +428,7 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
     }
 
     /* ─── CONTENT CANVAS ─────────────────────────────────────────────── */
-    .canvas { padding: 24px 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+    .canvas { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 14px; }
 
     /* ─── TOAST ──────────────────────────────────────────────────────── */
     .toast {
@@ -468,7 +468,7 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
         gap: 16px;
         align-items: start;
     }
-    .left-col { display: flex; flex-direction: column; gap: 16px; }
+    .left-col { display: flex; flex-direction: column; gap: 14px; }
     .right-col {
         display: flex; flex-direction: column; gap: 12px;
         position: sticky;
@@ -501,9 +501,40 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
     }
     .view-all svg { width: 12px; height: 12px; }
 
+    /* ─── TABBED PANEL (Transactions / New Entry merge) ─────────────── */
+    .panel-tabs {
+        display: flex; gap: 6px;
+        padding: 12px 16px 10px;
+    }
+    .tab-btn {
+        flex: 1;
+        padding: 8px 0;
+        text-align: center;
+        font-size: .78rem; font-weight: 700;
+        color: var(--text-2);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--r-sm);
+        cursor: pointer;
+        transition: background .15s, color .15s, border-color .15s;
+    }
+    .tab-btn.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+    .tab-btn:hover:not(.active) { background: var(--surface-h); color: var(--text-1); }
+    .tab-content { display: none; }
+    .tab-content.active {
+        display: block;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255,255,255,.15) transparent;
+    }
+    .tab-content.active::-webkit-scrollbar { width: 5px; }
+    .tab-content.active::-webkit-scrollbar-track { background: transparent; }
+    .tab-content.active::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); border-radius: 10px; }
+    .tab-content.active::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.25); }
+
     /* ─── REVENUE FLOW CHART ─────────────────────────────────────────── */
     .chart-area { padding: 0 20px 20px; position: relative; }
-    .chart-canvas-wrap { position: relative; height: 140px; }
+    .chart-canvas-wrap { position: relative; height: 118px; }
     canvas#revenueChart { width: 100% !important; height: 100% !important; }
 
     /* ─── BOTTOM ROW ─────────────────────────────────────────────────── */
@@ -547,7 +578,7 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
         background: linear-gradient(135deg, #1a3a6b 0%, #0f2150 40%, #0d1a3e 100%);
         border: 1px solid rgba(59,130,246,.2);
         border-radius: var(--r-lg);
-        padding: 16px 18px;
+        padding: 14px 18px;
         position: relative;
         overflow: hidden;
     }
@@ -567,7 +598,7 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
         background: radial-gradient(circle, rgba(129,140,248,.15) 0%, transparent 70%);
         pointer-events: none;
     }
-    .bc-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; position: relative; z-index: 1; }
+    .bc-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; position: relative; z-index: 1; }
     .bc-label { font-size: .7rem; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: rgba(255,255,255,.5); }
     .bc-plus-btn {
         width: 32px; height: 32px; border-radius: 50%;
@@ -587,7 +618,7 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
     .bc-amount.positive { color: #fff; }
     .bc-amount.negative { color: var(--expense-clr); }
     .bc-sub { font-size: .72rem; color: rgba(255,255,255,.4); margin-top: 6px; position: relative; z-index: 1; }
-    .bc-chips { display: flex; gap: 6px; margin-top: 10px; position: relative; z-index: 1; }
+    .bc-chips { display: flex; gap: 6px; margin-top: 8px; position: relative; z-index: 1; }
     .bc-chip {
         flex: 1; padding: 8px 10px;
         background: rgba(255,255,255,.07);
@@ -661,16 +692,17 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
     .tx-no-results.visible { display: block; }
 
     /* ─── ADD ENTRY PANEL ────────────────────────────────────────────── */
-    .add-panel { padding: 16px; }
-    .field { margin-bottom: 10px; }
+    .add-panel { padding: 14px 16px 16px; }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .field { margin-bottom: 8px; }
     .field label {
         display: block; font-size: .68rem; font-weight: 600;
-        color: var(--text-2); margin-bottom: 5px; letter-spacing: .04em;
+        color: var(--text-2); margin-bottom: 4px; letter-spacing: .04em;
         text-transform: uppercase;
     }
     .field label .req { color: var(--blue-light); margin-left: 2px; }
     .field input, .field select {
-        width: 100%; padding: 8px 12px;
+        width: 100%; padding: 7px 10px;
         background: rgba(255,255,255,.05);
         border: 1px solid var(--border);
         border-radius: var(--r-sm);
@@ -698,14 +730,14 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
     .prefix-sym { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-2); font-size: .82rem; pointer-events: none; }
     .prefix-wrap input { padding-left: 26px; }
     .save-btn {
-        width: 100%; padding: 11px;
+        width: 100%; padding: 10px;
         background: linear-gradient(135deg, var(--blue) 0%, var(--indigo) 100%);
         border: none; border-radius: var(--r-sm);
         color: #fff; font-family: var(--font); font-size: .84rem; font-weight: 700;
         cursor: pointer; letter-spacing: .01em;
         display: flex; align-items: center; justify-content: center; gap: 7px;
         transition: opacity .15s, transform .1s, box-shadow .15s;
-        margin-top: 12px;
+        margin-top: 8px;
     }
     .save-btn:hover  { opacity: .9; box-shadow: 0 6px 20px var(--blue-glow); }
     .save-btn:active { transform: scale(.98); }
@@ -914,7 +946,7 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
                 <div class="balance-card">
                     <div class="bc-top">
                         <span class="bc-label">Net Balance</span>
-                        <div class="bc-plus-btn" onclick="document.getElementById('amount').focus()">
+                        <div class="bc-plus-btn" onclick="switchToAddTab()">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                         </div>
                     </div>
@@ -934,111 +966,112 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
                     </div>
                 </div>
 
-                <!-- Recent Transactions -->
+                <!-- Transactions / New Entry — merged tabbed panel -->
                 <div class="panel">
-                    <div class="panel-head">
-                        <h2>Transactions</h2>
-                        <a href="#" class="view-all">View All <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></a>
+                    <div class="panel-tabs">
+                        <button type="button" class="tab-btn active" data-tab="recent">Recent</button>
+                        <button type="button" class="tab-btn" data-tab="add">Add Entry</button>
                     </div>
-                    <div class="tx-list" id="txList">
-                        <?php if (empty($transactions)): ?>
-                        <div class="tx-empty">No transactions yet. Add one below!</div>
-                        <?php else:
-                            $shown = array_slice($transactions, 0, 6);
-                            foreach ($shown as $t):
-                                $initials = strtoupper(substr($t['category_name'], 0, 2));
-                                // data-attributes for JS filtering
-                                $row_type    = htmlspecialchars($t['type']);
-                                $row_date    = htmlspecialchars($t['date']); // e.g. 2025-06-10
-                                $row_label   = htmlspecialchars(strtolower($t['description'] ?: $t['category_name']));
-                                $row_cat     = htmlspecialchars(strtolower($t['category_name']));
-                        ?>
-                        <div class="tx-row"
-                             data-type="<?php echo $row_type; ?>"
-                             data-date="<?php echo $row_date; ?>"
-                             data-label="<?php echo $row_label; ?>"
-                             data-category="<?php echo $row_cat; ?>">
-                            <div class="tx-icon <?php echo $t['type']; ?>"><?php echo $initials; ?></div>
-                            <div class="tx-meta">
-                                <div class="tx-name"><?php echo $t['description'] ? htmlspecialchars($t['description']) : htmlspecialchars($t['category_name']); ?></div>
-                                <div class="tx-date-small"><?php echo date('M d, Y', strtotime($t['date'])); ?></div>
+
+                    <!-- Tab: Recent Transactions -->
+                    <div class="tab-content active" data-tab-content="recent">
+                        <div class="tx-list" id="txList">
+                            <?php if (empty($transactions)): ?>
+                            <div class="tx-empty">No transactions yet. Add one below!</div>
+                            <?php else:
+                                $shown = array_slice($transactions, 0, 15);
+                                foreach ($shown as $t):
+                                    $initials = strtoupper(substr($t['category_name'], 0, 2));
+                                    // data-attributes for JS filtering
+                                    $row_type    = htmlspecialchars($t['type']);
+                                    $row_date    = htmlspecialchars($t['date']); // e.g. 2025-06-10
+                                    $row_label   = htmlspecialchars(strtolower($t['description'] ?: $t['category_name']));
+                                    $row_cat     = htmlspecialchars(strtolower($t['category_name']));
+                            ?>
+                            <div class="tx-row"
+                                 data-type="<?php echo $row_type; ?>"
+                                 data-date="<?php echo $row_date; ?>"
+                                 data-label="<?php echo $row_label; ?>"
+                                 data-category="<?php echo $row_cat; ?>">
+                                <div class="tx-icon <?php echo $t['type']; ?>"><?php echo $initials; ?></div>
+                                <div class="tx-meta">
+                                    <div class="tx-name"><?php echo $t['description'] ? htmlspecialchars($t['description']) : htmlspecialchars($t['category_name']); ?></div>
+                                    <div class="tx-date-small"><?php echo date('M d, Y', strtotime($t['date'])); ?></div>
+                                </div>
+                                <div class="tx-amt <?php echo $t['type']; ?>">
+                                    <?php echo $t['type'] === 'income' ? '+' : '−'; ?> ₱<?php echo number_format($t['amount'], 2); ?>
+                                </div>
+                                <!-- Delete button -->
+                                <form method="POST" action="dashboard.php" style="margin:0;padding:0;display:contents;">
+                                    <input type="hidden" name="transaction_id" value="<?php echo (int)$t['id']; ?>">
+                                    <button
+                                        type="submit"
+                                        name="delete_transaction"
+                                        class="tx-delete-btn"
+                                        title="Delete transaction"
+                                        onclick="return confirm('Delete this transaction? This cannot be undone.');">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="3 6 5 6 21 6"/>
+                                            <path d="M19 6l-1 14H6L5 6"/>
+                                            <path d="M10 11v6"/><path d="M14 11v6"/>
+                                            <path d="M9 6V4h6v2"/>
+                                        </svg>
+                                    </button>
+                                </form>
                             </div>
-                            <div class="tx-amt <?php echo $t['type']; ?>">
-                                <?php echo $t['type'] === 'income' ? '+' : '−'; ?> ₱<?php echo number_format($t['amount'], 2); ?>
-                            </div>
-                            <!-- Delete button -->
-                            <form method="POST" action="dashboard.php" style="margin:0;padding:0;display:contents;">
-                                <input type="hidden" name="transaction_id" value="<?php echo (int)$t['id']; ?>">
-                                <button
-                                    type="submit"
-                                    name="delete_transaction"
-                                    class="tx-delete-btn"
-                                    title="Delete transaction"
-                                    onclick="return confirm('Delete this transaction? This cannot be undone.');">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="3 6 5 6 21 6"/>
-                                        <path d="M19 6l-1 14H6L5 6"/>
-                                        <path d="M10 11v6"/><path d="M14 11v6"/>
-                                        <path d="M9 6V4h6v2"/>
-                                    </svg>
+                            <?php endforeach; endif; ?>
+                        </div>
+                        <!-- No-results state for live filter -->
+                        <div class="tx-no-results" id="txNoResults">No matching transactions found.</div>
+                    </div>
+
+                    <!-- Tab: Add New Entry -->
+                    <div class="tab-content" data-tab-content="add">
+                        <div class="add-panel">
+                            <form action="dashboard.php" method="POST" autocomplete="off">
+                                <div class="field-grid">
+                                    <div class="field">
+                                        <label>Amount <span class="req">*</span></label>
+                                        <div class="prefix-wrap">
+                                            <span class="prefix-sym">₱</span>
+                                            <input type="number" id="amount" name="amount" step="0.01" min="0.01" placeholder="0.00" required>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <label>Category <span class="req">*</span></label>
+                                        <select name="category_id" required>
+                                            <option value="">— Select —</option>
+                                            <?php if (!empty($income_cats)): ?>
+                                            <optgroup label="Income">
+                                                <?php foreach ($income_cats as $cat): ?>
+                                                <option value="<?php echo $cat['id']; ?>"><?php echo htmlspecialchars($cat['name']); ?></option>
+                                                <?php endforeach; ?>
+                                            </optgroup>
+                                            <?php endif; ?>
+                                            <?php if (!empty($expense_cats)): ?>
+                                            <optgroup label="Expense">
+                                                <?php foreach ($expense_cats as $cat): ?>
+                                                <option value="<?php echo $cat['id']; ?>"><?php echo htmlspecialchars($cat['name']); ?></option>
+                                                <?php endforeach; ?>
+                                            </optgroup>
+                                            <?php endif; ?>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label>Description</label>
+                                    <input type="text" name="description" placeholder="e.g., Jollibee, Allowance…">
+                                </div>
+                                <div class="field" style="margin-bottom:0;">
+                                    <label>Date <span class="req">*</span></label>
+                                    <input type="date" name="date" required value="<?php echo date('Y-m-d'); ?>">
+                                </div>
+                                <button type="submit" name="add_transaction" class="save-btn">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                    Save Entry
                                 </button>
                             </form>
                         </div>
-                        <?php endforeach; endif; ?>
-                    </div>
-                    <!-- No-results state for live filter -->
-                    <div class="tx-no-results" id="txNoResults">No matching transactions found.</div>
-                </div>
-
-                <!-- Add New Entry -->
-                <div class="panel">
-                    <div class="panel-head">
-                        <div>
-                            <h2>New Entry</h2>
-                        </div>
-                    </div>
-                    <div class="add-panel">
-                        <form action="dashboard.php" method="POST" autocomplete="off">
-                            <div class="field">
-                                <label>Amount <span class="req">*</span></label>
-                                <div class="prefix-wrap">
-                                    <span class="prefix-sym">₱</span>
-                                    <input type="number" id="amount" name="amount" step="0.01" min="0.01" placeholder="0.00" required>
-                                </div>
-                            </div>
-                            <div class="field">
-                                <label>Category <span class="req">*</span></label>
-                                <select name="category_id" required>
-                                    <option value="">— Select —</option>
-                                    <?php if (!empty($income_cats)): ?>
-                                    <optgroup label="Income">
-                                        <?php foreach ($income_cats as $cat): ?>
-                                        <option value="<?php echo $cat['id']; ?>"><?php echo htmlspecialchars($cat['name']); ?></option>
-                                        <?php endforeach; ?>
-                                    </optgroup>
-                                    <?php endif; ?>
-                                    <?php if (!empty($expense_cats)): ?>
-                                    <optgroup label="Expense">
-                                        <?php foreach ($expense_cats as $cat): ?>
-                                        <option value="<?php echo $cat['id']; ?>"><?php echo htmlspecialchars($cat['name']); ?></option>
-                                        <?php endforeach; ?>
-                                    </optgroup>
-                                    <?php endif; ?>
-                                </select>
-                            </div>
-                            <div class="field">
-                                <label>Description</label>
-                                <input type="text" name="description" placeholder="e.g., Jollibee, Allowance…">
-                            </div>
-                            <div class="field">
-                                <label>Date <span class="req">*</span></label>
-                                <input type="date" name="date" required value="<?php echo date('Y-m-d'); ?>">
-                            </div>
-                            <button type="submit" name="add_transaction" class="save-btn">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                                Save Entry
-                            </button>
-                        </form>
                     </div>
                 </div>
 
@@ -1155,6 +1188,74 @@ new Chart(donutCtx, {
         }
     }
 });
+
+// ══════════════════════════════════════════════════════════════════════
+// ── TABBED PANEL (Recent / Add Entry) ────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════
+(function () {
+    const tabBtns   = document.querySelectorAll('.tab-btn[data-tab]');
+    const tabPanels = document.querySelectorAll('.tab-content[data-tab-content]');
+    const addPanel  = document.querySelector('.tab-content[data-tab-content="add"]');
+
+    // The "Add Entry" form always has the same fields — its natural height
+    // never changes. So THAT height becomes the shared, fixed height for
+    // both tabs. "Recent" then scrolls internally if it has more
+    // transactions than that height allows — no more empty gutter under
+    // Save Entry, no more elongated card.
+    function measureAddNaturalHeight() {
+        if (!addPanel) return null;
+        const prevDisplay = addPanel.style.display;
+        const prevHeight  = addPanel.style.height;
+        const prevMaxH    = addPanel.style.maxHeight;
+
+        addPanel.style.display   = 'block';
+        addPanel.style.height    = 'auto';
+        addPanel.style.maxHeight = 'none';
+
+        const naturalHeight = addPanel.scrollHeight;
+
+        addPanel.style.display   = prevDisplay;
+        addPanel.style.height    = prevHeight;
+        addPanel.style.maxHeight = prevMaxH;
+
+        return naturalHeight;
+    }
+
+    function syncPanelHeights() {
+        const h = measureAddNaturalHeight();
+        if (!h) return;
+        tabPanels.forEach(function (p) {
+            p.style.height    = h + 'px';
+            p.style.maxHeight = h + 'px';
+            p.style.overflowY = 'auto';
+        });
+    }
+
+    syncPanelHeights();
+    window.addEventListener('resize', syncPanelHeights);
+
+    function activateTab(tabName) {
+        tabBtns.forEach(b => b.classList.toggle('active', b.dataset.tab === tabName));
+        tabPanels.forEach(function (p) {
+            const isActive = p.dataset.tabContent === tabName;
+            p.classList.toggle('active', isActive);
+            p.style.display = isActive ? 'block' : 'none';
+        });
+    }
+
+    tabBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            activateTab(btn.dataset.tab);
+        });
+    });
+
+    // Exposed globally so the balance card's "+" button can jump straight to Add Entry
+    window.switchToAddTab = function () {
+        activateTab('add');
+        const amountInput = document.getElementById('amount');
+        if (amountInput) amountInput.focus();
+    };
+})();
 
 // ══════════════════════════════════════════════════════════════════════
 // ── LIVE SEARCH + FILTER PILLS (Vanilla JS, zero AJAX, zero reload) ──
