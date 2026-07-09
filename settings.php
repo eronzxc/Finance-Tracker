@@ -301,7 +301,8 @@ $expense_cats_all = array_filter($all_categories, fn($c) => $c['type'] === 'expe
 
     /* ─── MAIN WRAPPER ───────────────────────────────────────────────── */
     .main { margin-left: 72px; flex: 1; display: flex; flex-direction: column; position: relative; z-index: 1; transition: margin-left .28s cubic-bezier(.4,0,.2,1); }
-    .canvas { padding: 18px 20px 40px; display: flex; flex-direction: column; gap: 16px; max-width: 1080px; }
+    .canvas { padding: 18px 20px 40px; display: flex; flex-direction: column; gap: 16px; }
+    .settings-content { max-width: 1080px; width: 100%; display: flex; flex-direction: column; gap: 16px; }
 
     /* ─── SETTINGS TABS ──────────────────────────────────────────────── */
     .settings-tabs {
@@ -449,7 +450,8 @@ $expense_cats_all = array_filter($all_categories, fn($c) => $c['type'] === 'expe
     @media (max-width: 640px) {
         .sidebar { display: none; }
         .main { margin-left: 0; }
-        .canvas { padding: 16px; max-width: 100%; }
+        .canvas { padding: 16px; }
+        .settings-content { max-width: 100%; }
         .field-row { grid-template-columns: 1fr; }
         .cat-add-row { flex-wrap: wrap; }
         .cat-add-row select { width: 100%; }
@@ -525,6 +527,8 @@ $expense_cats_all = array_filter($all_categories, fn($c) => $c['type'] === 'expe
             <div class="topbar-avatar"><?php echo strtoupper(substr($display_name, 0, 1)); ?></div>
         </div>
     </div>
+
+    <div class="settings-content">
 
     <!-- Toast Alerts (PRG session-based) -->
     <?php if ($message === 'profile_success'): ?>
@@ -742,6 +746,8 @@ $expense_cats_all = array_filter($all_categories, fn($c) => $c['type'] === 'expe
 
         <?php endif; ?>
     </div>
+    </div>
+
     </div>
 
 </div>
