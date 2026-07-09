@@ -301,7 +301,31 @@ $expense_cats_all = array_filter($all_categories, fn($c) => $c['type'] === 'expe
 
     /* ─── MAIN WRAPPER ───────────────────────────────────────────────── */
     .main { margin-left: 72px; flex: 1; display: flex; flex-direction: column; position: relative; z-index: 1; transition: margin-left .28s cubic-bezier(.4,0,.2,1); }
-    .canvas { padding: 18px 20px 40px; display: flex; flex-direction: column; gap: 16px; max-width: 880px; }
+    .canvas { padding: 18px 20px 40px; display: flex; flex-direction: column; gap: 16px; max-width: 1080px; }
+
+    /* ─── SETTINGS TABS ──────────────────────────────────────────────── */
+    .settings-tabs {
+        display: flex; gap: 4px; padding: 4px;
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: var(--r-md); backdrop-filter: blur(12px);
+        width: fit-content;
+    }
+    .settings-tab {
+        display: flex; align-items: center; gap: 7px;
+        padding: 8px 16px; border-radius: var(--r-sm);
+        font-size: .82rem; font-weight: 600; color: var(--text-2);
+        cursor: pointer; border: none; background: transparent;
+        font-family: var(--font); transition: background .15s, color .15s;
+        white-space: nowrap;
+    }
+    .settings-tab svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .settings-tab:hover { color: var(--text-1); background: var(--surface-h); }
+    .settings-tab.active { background: var(--blue-dim); color: var(--blue-light); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: flex; flex-direction: column; gap: 16px; }
+    @media (max-width: 640px) {
+        .settings-tabs { width: 100%; overflow-x: auto; }
+    }
 
     /* ─── PAGE TOP ROW ───────────────────────────────────────────────── */
     .page-top-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
@@ -535,7 +559,28 @@ $expense_cats_all = array_filter($all_categories, fn($c) => $c['type'] === 'expe
     </div>
     <?php endif; ?>
 
-    <!-- ═══ PROFILE ═══════════════════════════════════════════════════ -->
+    <!-- ═══ TABS ══════════════════════════════════════════════════════ -->
+    <div class="settings-tabs">
+        <button type="button" class="settings-tab active" data-tab="profile">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Profile
+        </button>
+        <button type="button" class="settings-tab" data-tab="security">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Security
+        </button>
+        <button type="button" class="settings-tab" data-tab="preferences">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Preferences
+        </button>
+        <button type="button" class="settings-tab" data-tab="categories">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+            Categories
+        </button>
+    </div>
+
+    <!-- ═══ PROFILE TAB ═══════════════════════════════════════════════ -->
+    <div class="tab-panel active" data-tab-panel="profile">
     <div class="panel">
         <div class="profile-strip">
             <div class="profile-avatar"><?php echo strtoupper(substr($display_name, 0, 1)); ?></div>
@@ -564,8 +609,13 @@ $expense_cats_all = array_filter($all_categories, fn($c) => $c['type'] === 'expe
                 <button type="submit" name="update_profile" class="btn-primary">Save Profile</button>
             </form>
         </div>
+    </div>
+    </div>
 
-        <div class="panel-head" style="border-top:1px solid var(--border);">
+    <!-- ═══ SECURITY TAB ══════════════════════════════════════════════ -->
+    <div class="tab-panel" data-tab-panel="security">
+    <div class="panel">
+        <div class="panel-head">
             <div>
                 <h2>Change Password</h2>
                 <p>Use a strong password you don't use elsewhere</p>
@@ -591,8 +641,10 @@ $expense_cats_all = array_filter($all_categories, fn($c) => $c['type'] === 'expe
             </form>
         </div>
     </div>
+    </div>
 
-    <!-- ═══ PREFERENCES ═══════════════════════════════════════════════ -->
+    <!-- ═══ PREFERENCES TAB ═══════════════════════════════════════════ -->
+    <div class="tab-panel" data-tab-panel="preferences">
     <div class="panel">
         <div class="panel-head">
             <div>
@@ -611,8 +663,10 @@ $expense_cats_all = array_filter($all_categories, fn($c) => $c['type'] === 'expe
             </label>
         </div>
     </div>
+    </div>
 
-    <!-- ═══ CATEGORIES MANAGER ════════════════════════════════════════ -->
+    <!-- ═══ CATEGORIES TAB ════════════════════════════════════════════ -->
+    <div class="tab-panel" data-tab-panel="categories">
     <div class="panel">
         <div class="panel-head">
             <div>
@@ -688,11 +742,32 @@ $expense_cats_all = array_filter($all_categories, fn($c) => $c['type'] === 'expe
 
         <?php endif; ?>
     </div>
+    </div>
 
 </div>
 </div>
 
 <script>
+// ── Settings tabs ──────────────────────────────────────────────────
+(function () {
+    const tabs   = document.querySelectorAll('.settings-tab');
+    const panels = document.querySelectorAll('.tab-panel');
+    const STORAGE = 'sentimo_settings_tab';
+
+    function activate(name) {
+        tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+        panels.forEach(p => p.classList.toggle('active', p.dataset.tabPanel === name));
+        sessionStorage.setItem(STORAGE, name);
+    }
+
+    tabs.forEach(t => t.addEventListener('click', () => activate(t.dataset.tab)));
+
+    const saved = sessionStorage.getItem(STORAGE);
+    if (saved && document.querySelector('.tab-panel[data-tab-panel="' + saved + '"]')) {
+        activate(saved);
+    }
+})();
+
 // ── Dark / Light Mode: topbar icon + Preferences switch, kept in sync ──
 (function () {
     const root      = document.documentElement;
