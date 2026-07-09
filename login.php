@@ -29,6 +29,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+<script>
+// Apply saved theme before render
+(function () {
+    const t = localStorage.getItem('sentimo_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+})();
+</script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sentimo — Login</title>

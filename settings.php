@@ -715,6 +715,25 @@ $expense_cats_all = array_filter($all_categories, fn($c) => $c['type'] === 'expe
         apply(switchBox.checked ? 'light' : 'dark');
     });
 })();
+
+// ── Theme toggle (Settings page — single source of truth) ────────────
+(function () {
+    const root    = document.documentElement;
+    const STORAGE = 'sentimo_theme';
+    const saved   = localStorage.getItem(STORAGE) || 'dark';
+    root.setAttribute('data-theme', saved);
+
+    // Sync the toggle switch UI on load
+    const toggle = document.getElementById('darkModeToggle');
+    if (toggle) {
+        toggle.checked = (saved === 'dark');
+        toggle.addEventListener('change', function () {
+            const next = toggle.checked ? 'dark' : 'light';
+            root.setAttribute('data-theme', next);
+            localStorage.setItem(STORAGE, next);
+        });
+    }
+})();
 </script>
 </body>
 </html>

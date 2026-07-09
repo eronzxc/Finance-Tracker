@@ -1319,6 +1319,12 @@ new Chart(donutCtx, {
         applyFilters();
     });
 })();
+
+// ── Theme: read from localStorage (controlled via Settings) ──────────
+(function () {
+    const saved = localStorage.getItem('sentimo_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', saved);
+})();
 </script>
 </body>
 </html>
