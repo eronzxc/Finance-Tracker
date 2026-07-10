@@ -103,7 +103,7 @@ foreach ($transactions as $t) {
     unset($m);
 }
 
-// Expense breakdown by category (donut chart)
+// Expense breakdown by category (donut chart) — all time
 $cat_totals = [];
 foreach ($transactions as $t) {
     if ($t['type'] === 'expense') {
@@ -117,6 +117,23 @@ $donut_colors = ['#3B82F6','#818CF8','#38BDF8','#6EE7B7'];
 
 // Current month string for JS "This Month" filter
 $current_month_str = date('Y-m'); // e.g. "2025-06"
+
+// ── "This Month" versions for the Revenue Flow / Available toggle ──────
+$month_income = 0;
+$month_expense = 0;
+$cat_totals_month = [];
+foreach ($transactions as $t) {
+    if (substr($t['date'], 0, 7) !== $current_month_str) continue;
+    if ($t['type'] === 'income') {
+        $month_income += $t['amount'];
+    } else {
+        $month_expense += $t['amount'];
+        $name = $t['category_name'];
+        $cat_totals_month[$name] = ($cat_totals_month[$name] ?? 0) + $t['amount'];
+    }
+}
+arsort($cat_totals_month);
+$top_cats_month = array_slice($cat_totals_month, 0, 4, true);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -545,6 +562,23 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
         cursor: pointer; text-decoration: none;
     }
     .view-all svg { width: 12px; height: 12px; }
+
+    /* ─── SCOPE TOGGLE (Revenue Flow / Available: This Month vs All Time) ── */
+    .scope-toggle {
+        display: flex; gap: 2px; padding: 2px;
+        background: var(--surface); border: 1px solid var(--border);
+        border-radius: 20px;
+    }
+    .scope-btn {
+        font-family: var(--font);
+        font-size: .68rem; font-weight: 600; color: var(--text-2);
+        padding: 5px 11px; border-radius: 16px; border: none;
+        background: transparent; cursor: pointer;
+        white-space: nowrap;
+        transition: background .15s, color .15s;
+    }
+    .scope-btn:hover:not(.active) { color: var(--text-1); }
+    .scope-btn.active { background: var(--blue); color: #fff; }
 
     /* ─── TABBED PANEL (Transactions / New Entry merge) ─────────────── */
     .panel-tabs {
@@ -976,7 +1010,10 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
                 <div class="panel">
                     <div class="panel-head">
                         <h2>Revenue Flow</h2>
-                        <a href="#" class="view-all">View All <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></a>
+                        <div class="scope-toggle" data-chart="revenue">
+                            <button type="button" class="scope-btn active" data-scope="alltime">6 Months</button>
+                            <button type="button" class="scope-btn" data-scope="month">This Month</button>
+                        </div>
                     </div>
                     <div class="chart-area">
                         <div class="chart-canvas-wrap">
@@ -992,17 +1029,20 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
                     <div class="panel">
                         <div class="panel-head">
                             <h2>Available</h2>
-                            <a href="#" class="view-all">View All <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></a>
+                            <div class="scope-toggle" data-chart="donut">
+                                <button type="button" class="scope-btn active" data-scope="alltime">All Time</button>
+                                <button type="button" class="scope-btn" data-scope="month">This Month</button>
+                            </div>
                         </div>
                         <div class="donut-wrap">
                             <div class="donut-chart-wrap">
                                 <canvas id="donutChart"></canvas>
                                 <div class="donut-center">
-                                    <div class="amt">₱<?php echo number_format($total_expense, 0); ?></div>
+                                    <div class="amt" id="donutCenterAmt">₱<?php echo number_format($total_expense, 0); ?></div>
                                     <div class="lbl">Expenses</div>
                                 </div>
                             </div>
-                            <div class="donut-legend">
+                            <div class="donut-legend" id="donutLegend">
                                 <?php
                                 $di = 0;
                                 if (empty($top_cats)): ?>
@@ -1194,6 +1234,8 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
 const monthLabels  = <?php echo json_encode(array_column($monthly_data, 'label')); ?>;
 const incomeData   = <?php echo json_encode(array_map(fn($m) => round($m['income'], 2), $monthly_data)); ?>;
 const expenseData  = <?php echo json_encode(array_map(fn($m) => round($m['expense'], 2), $monthly_data)); ?>;
+const monthIncome  = <?php echo json_encode(round($month_income, 2)); ?>;
+const monthExpense = <?php echo json_encode(round($month_expense, 2)); ?>;
 
 const revenueCtx = document.getElementById('revenueChart').getContext('2d');
 
@@ -1201,7 +1243,7 @@ const incGrad = revenueCtx.createLinearGradient(0, 0, 0, 160);
 incGrad.addColorStop(0, 'rgba(99,102,241,0.9)');
 incGrad.addColorStop(1, 'rgba(59,130,246,0.5)');
 
-new Chart(revenueCtx, {
+const revenueChart = new Chart(revenueCtx, {
     type: 'bar',
     data: {
         labels: monthLabels,
@@ -1260,13 +1302,43 @@ new Chart(revenueCtx, {
     }
 });
 
+// Toggle: 6-month trend view <-> single "this month" income/expense view
+(function () {
+    const toggle = document.querySelector('.scope-toggle[data-chart="revenue"]');
+    if (!toggle) return;
+    const btns = toggle.querySelectorAll('.scope-btn');
+
+    btns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            btns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            if (btn.dataset.scope === 'month') {
+                revenueChart.data.labels = ['This Month'];
+                revenueChart.data.datasets[0].data = [monthIncome];
+                revenueChart.data.datasets[1].data = [monthExpense];
+            } else {
+                revenueChart.data.labels = monthLabels;
+                revenueChart.data.datasets[0].data = incomeData;
+                revenueChart.data.datasets[1].data = expenseData;
+            }
+            revenueChart.update();
+        });
+    });
+})();
+
 // ── Donut Chart ─────────────────────────────────────────────────────
 const donutCtx    = document.getElementById('donutChart').getContext('2d');
 const donutLabels = <?php echo json_encode(array_keys($top_cats)); ?>;
 const donutVals   = <?php echo json_encode(array_values($top_cats)); ?>;
 const donutColors = <?php echo json_encode(array_values($donut_colors)); ?>;
 
-new Chart(donutCtx, {
+const donutLabelsMonth = <?php echo json_encode(array_keys($top_cats_month)); ?>;
+const donutValsMonth   = <?php echo json_encode(array_values($top_cats_month)); ?>;
+const totalExpenseAll   = <?php echo json_encode(round($total_expense, 2)); ?>;
+const totalExpenseMonth = <?php echo json_encode(round($month_expense, 2)); ?>;
+
+const donutChart = new Chart(donutCtx, {
     type: 'doughnut',
     data: {
         labels: donutLabels.length ? donutLabels : ['No data'],
@@ -1295,6 +1367,56 @@ new Chart(donutCtx, {
         }
     }
 });
+
+// Toggle: all-time category breakdown <-> this-month category breakdown
+(function () {
+    const toggle = document.querySelector('.scope-toggle[data-chart="donut"]');
+    if (!toggle) return;
+    const btns        = toggle.querySelectorAll('.scope-btn');
+    const centerAmt    = document.getElementById('donutCenterAmt');
+    const legendWrap    = document.getElementById('donutLegend');
+
+    function peso0(n) { return '₱' + Math.round(n).toLocaleString('en-PH'); }
+
+    function renderLegend(labels, vals) {
+        if (!labels.length) {
+            legendWrap.innerHTML = '<span style="font-size:.75rem;color:var(--text-3)">No data yet</span>';
+            return;
+        }
+        legendWrap.innerHTML = labels.map(function (name, i) {
+            const color = donutColors[i % donutColors.length];
+            return '<div class="legend-item">' +
+                '<span class="legend-dot" style="background:' + color + '"></span>' +
+                '<span class="legend-name"></span>' +
+                '<span class="legend-val">' + peso0(vals[i]) + '</span>' +
+            '</div>';
+        }).join('');
+        // set text via textContent to avoid HTML-escaping category names
+        legendWrap.querySelectorAll('.legend-name').forEach(function (el, i) {
+            el.textContent = labels[i];
+        });
+    }
+
+    btns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            btns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const isMonth = btn.dataset.scope === 'month';
+            const labels  = isMonth ? donutLabelsMonth : donutLabels;
+            const vals    = isMonth ? donutValsMonth   : donutVals;
+            const total   = isMonth ? totalExpenseMonth : totalExpenseAll;
+
+            donutChart.data.labels = labels.length ? labels : ['No data'];
+            donutChart.data.datasets[0].data            = vals.length ? vals : [1];
+            donutChart.data.datasets[0].backgroundColor = vals.length ? donutColors : ['rgba(255,255,255,0.08)'];
+            donutChart.update();
+
+            centerAmt.textContent = peso0(total);
+            renderLegend(labels, vals);
+        });
+    });
+})();
 
 // ══════════════════════════════════════════════════════════════════════
 // ── TABBED PANEL (Recent / Add Entry) ────────────────────────────────
