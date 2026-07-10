@@ -609,6 +609,50 @@ $transactions = $trans_stmt->fetchAll();
         .canvas { padding: 16px; }
         .summary-strip { grid-template-columns: 1fr; }
     }
+
+    /* ─── AVATAR DROPDOWN ────────────────────────────────────────────── */
+    .avatar-wrap { position: relative; }
+    .avatar-dropdown {
+        position: absolute; top: calc(100% + 8px); right: 0;
+        background: #0f1829;
+        border: 1px solid var(--border);
+        border-radius: var(--r-md);
+        min-width: 180px;
+        box-shadow: 0 8px 32px rgba(0,0,0,.45);
+        overflow: hidden;
+        opacity: 0; transform: translateY(-6px) scale(.97);
+        pointer-events: none;
+        transition: opacity .15s, transform .15s;
+        z-index: 999;
+    }
+    [data-theme="light"] .avatar-dropdown { background: #ffffff; box-shadow: 0 8px 32px rgba(15,23,42,.15); }
+    .avatar-dropdown.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+    .dd-header {
+        padding: 12px 14px 10px;
+        border-bottom: 1px solid var(--border);
+    }
+    .dd-name { font-size: .82rem; font-weight: 700; color: var(--text-1); }
+    .dd-user { font-size: .7rem; color: var(--text-3); margin-top: 1px; }
+    .dd-item {
+        display: flex; align-items: center; gap: 10px;
+        padding: 10px 14px;
+        font-size: .8rem; font-weight: 500;
+        color: var(--text-2);
+        text-decoration: none;
+        transition: background .12s, color .12s;
+        cursor: pointer;
+    }
+    .dd-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+    .dd-item:hover { background: var(--surface-h); color: var(--text-1); }
+    .dd-item.danger { color: var(--expense-clr); }
+    .dd-item.danger:hover { background: var(--expense-bg); }
+    .dd-divider { height: 1px; background: var(--border); }
+    .topbar-avatar { cursor: pointer; transition: opacity .15s, box-shadow .15s; }
+    .topbar-avatar:hover { opacity: .88; box-shadow: 0 0 0 3px var(--blue-glow); border-radius: 50%; }
+    .notif-btn { cursor: pointer; }
+
+    /* notif-btn as anchor */
+    a.notif-btn { display: grid; place-items: center; text-decoration: none; }
     </style>
 </head>
 <body>
@@ -688,6 +732,31 @@ $transactions = $trans_stmt->fetchAll();
         <div class="page-heading">
             <h1>Transactions</h1>
             <p><?php echo date('l, F j, Y'); ?> — <?php echo count($transactions); ?> total entries</p>
+        </div>
+        <div class="page-top-actions">
+            <span class="page-greeting">Hi, <span><?php echo htmlspecialchars($display_name); ?>!</span></span>
+            <a href="notifications.php" class="notif-btn" title="Notifications">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                <span class="notif-dot"></span>
+            </a>
+            <div class="avatar-wrap" id="avatarWrap">
+                <div class="topbar-avatar" title="Account"><?php echo strtoupper(substr($display_name, 0, 1)); ?></div>
+                <div class="avatar-dropdown" id="avatarDropdown">
+                    <div class="dd-header">
+                        <div class="dd-name"><?php echo htmlspecialchars($display_name); ?></div>
+                        <div class="dd-user">@<?php echo htmlspecialchars($username); ?></div>
+                    </div>
+                    <a href="settings.php" class="dd-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06-.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        Settings
+                    </a>
+                    <div class="dd-divider"></div>
+                    <a href="logout.php" class="dd-item danger">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        Logout
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1015,6 +1084,35 @@ if (searchInput) {
 (function () {
     const saved = localStorage.getItem('sentimo_theme') || 'dark';
     document.documentElement.setAttribute('data-theme', saved);
+})();
+
+// ── Theme: apply on load + sync across tabs ──────────────────────────
+(function () {
+    const root    = document.documentElement;
+    const STORAGE = 'sentimo_theme';
+    root.setAttribute('data-theme', localStorage.getItem(STORAGE) || 'dark');
+    window.addEventListener('storage', function (e) {
+        if (e.key === STORAGE && e.newValue) {
+            root.setAttribute('data-theme', e.newValue);
+        }
+    });
+})();
+
+// ── Avatar dropdown ───────────────────────────────────────────────────
+(function () {
+    const wrap = document.getElementById('avatarWrap');
+    const menu = document.getElementById('avatarDropdown');
+    if (!wrap || !menu) return;
+    wrap.addEventListener('click', function (e) {
+        e.stopPropagation();
+        menu.classList.toggle('open');
+    });
+    document.addEventListener('click', function () {
+        menu.classList.remove('open');
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') menu.classList.remove('open');
+    });
 })();
 </script>
 </body>
