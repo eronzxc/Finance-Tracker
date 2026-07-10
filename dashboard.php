@@ -1023,9 +1023,9 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
                     <div class="panel">
                         <div class="ie-card">
                             <div class="ie-label">Income</div>
-                            <div class="ie-amount" style="color:var(--income-clr)">₱<?php echo number_format($total_income, 2); ?></div>
-                            <div class="ie-sub">Total recorded earnings</div>
-                            <span class="ie-badge inc">
+                            <div class="ie-amount" id="ieIncomeAmt" style="color:var(--income-clr)">₱<?php echo number_format($total_income, 2); ?></div>
+                            <div class="ie-sub" id="ieIncomeSub">Total recorded earnings</div>
+                            <span class="ie-badge inc" id="ieIncomeBadge">
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
                                 All time
                             </span>
@@ -1033,9 +1033,9 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
                         <div class="ie-divider"></div>
                         <div class="ie-card">
                             <div class="ie-label">Expense</div>
-                            <div class="ie-amount" style="color:var(--expense-clr)">₱<?php echo number_format($total_expense, 2); ?></div>
-                            <div class="ie-sub">Total recorded spending</div>
-                            <span class="ie-badge exp">
+                            <div class="ie-amount" id="ieExpenseAmt" style="color:var(--expense-clr)">₱<?php echo number_format($total_expense, 2); ?></div>
+                            <div class="ie-sub" id="ieExpenseSub">Total recorded spending</div>
+                            <span class="ie-badge exp" id="ieExpenseBadge">
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                                 All time
                             </span>
@@ -1051,23 +1051,23 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
                 <!-- Balance Card -->
                 <div class="balance-card">
                     <div class="bc-top">
-                        <span class="bc-label">Net Balance</span>
+                        <span class="bc-label" id="bcLabel">Net Balance</span>
                         <div class="bc-plus-btn" onclick="switchToAddTab()">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                         </div>
                     </div>
-                    <div class="bc-amount <?php echo $current_balance >= 0 ? 'positive' : 'negative'; ?>">
+                    <div class="bc-amount <?php echo $current_balance >= 0 ? 'positive' : 'negative'; ?>" id="bcAmount">
                         <?php echo $current_balance < 0 ? '−' : ''; ?>₱<?php echo number_format(abs($current_balance), 2); ?>
                     </div>
-                    <div class="bc-sub"><?php echo $current_balance >= 0 ? 'You\'re in the green 🎉' : 'Over budget — review expenses'; ?></div>
+                    <div class="bc-sub" id="bcSub"><?php echo $current_balance >= 0 ? 'You\'re in the green 🎉' : 'Over budget — review expenses'; ?></div>
                     <div class="bc-chips">
                         <div class="bc-chip inc">
                             <div class="c-lbl">Income</div>
-                            <div class="c-val">₱<?php echo number_format($total_income, 0); ?></div>
+                            <div class="c-val" id="chipIncome">₱<?php echo number_format($total_income, 0); ?></div>
                         </div>
                         <div class="bc-chip exp">
                             <div class="c-lbl">Spent</div>
-                            <div class="c-val">₱<?php echo number_format($total_expense, 0); ?></div>
+                            <div class="c-val" id="chipExpense">₱<?php echo number_format($total_expense, 0); ?></div>
                         </div>
                     </div>
                 </div>
@@ -1098,7 +1098,8 @@ $current_month_str = date('Y-m'); // e.g. "2025-06"
                                  data-type="<?php echo $row_type; ?>"
                                  data-date="<?php echo $row_date; ?>"
                                  data-label="<?php echo $row_label; ?>"
-                                 data-category="<?php echo $row_cat; ?>">
+                                 data-category="<?php echo $row_cat; ?>"
+                                 data-amount="<?php echo (float) $t['amount']; ?>">
                                 <div class="tx-icon <?php echo $t['type']; ?>"><?php echo $initials; ?></div>
                                 <div class="tx-meta">
                                     <div class="tx-name"><?php echo $t['description'] ? htmlspecialchars($t['description']) : htmlspecialchars($t['category_name']); ?></div>
@@ -1375,18 +1376,43 @@ new Chart(donutCtx, {
     // Current month prefix from PHP e.g. "2025-06"
     const CURRENT_MONTH = <?php echo json_encode($current_month_str); ?>;
 
+    // Elements updated live as filters change
+    const bcAmount      = document.getElementById('bcAmount');
+    const bcSub         = document.getElementById('bcSub');
+    const chipIncome    = document.getElementById('chipIncome');
+    const chipExpense   = document.getElementById('chipExpense');
+    const ieIncomeAmt   = document.getElementById('ieIncomeAmt');
+    const ieExpenseAmt  = document.getElementById('ieExpenseAmt');
+    const ieIncomeSub   = document.getElementById('ieIncomeSub');
+    const ieExpenseSub  = document.getElementById('ieExpenseSub');
+    const ieIncomeBadge = document.getElementById('ieIncomeBadge');
+    const ieExpenseBadge = document.getElementById('ieExpenseBadge');
+
+    const FILTER_LABELS = {
+        all:       'All time',
+        income:    'Income only',
+        expenses:  'Expenses only',
+        thismonth: 'This month'
+    };
+
+    function peso(n) {
+        return '₱' + n.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
     let activeFilter = 'all';
     let searchQuery  = '';
 
     function applyFilters() {
         const rows = txList.querySelectorAll('.tx-row');
         let visibleCount = 0;
+        let sumIncome = 0, sumExpense = 0;
 
         rows.forEach(function (row) {
             const type     = row.dataset.type;     // "income" | "expense"
             const date     = row.dataset.date;     // "2025-06-10"
             const label    = row.dataset.label;    // description lowercased
             const category = row.dataset.category; // category name lowercased
+            const amount   = parseFloat(row.dataset.amount) || 0;
 
             // 1. Filter pill check
             let pillPass = true;
@@ -1402,11 +1428,35 @@ new Chart(donutCtx, {
 
             const visible = pillPass && searchPass;
             row.style.display = visible ? 'flex' : 'none';
-            if (visible) visibleCount++;
+            if (visible) {
+                visibleCount++;
+                if (type === 'income') sumIncome += amount; else sumExpense += amount;
+            }
         });
 
         // Show/hide the empty state
         noResults.classList.toggle('visible', visibleCount === 0 && rows.length > 0);
+
+        // ── Update Net Balance, Income/Spent chips, and Income/Expense cards ──
+        const net = sumIncome - sumExpense;
+        if (bcAmount) {
+            bcAmount.textContent = (net < 0 ? '−' : '') + peso(Math.abs(net));
+            bcAmount.classList.toggle('positive', net >= 0);
+            bcAmount.classList.toggle('negative', net < 0);
+        }
+        if (bcSub) {
+            bcSub.textContent = net >= 0 ? 'You\'re in the green 🎉' : 'Over budget — review expenses';
+        }
+        if (chipIncome)  chipIncome.textContent  = '₱' + Math.round(sumIncome).toLocaleString('en-PH');
+        if (chipExpense) chipExpense.textContent = '₱' + Math.round(sumExpense).toLocaleString('en-PH');
+        if (ieIncomeAmt)  ieIncomeAmt.textContent  = peso(sumIncome);
+        if (ieExpenseAmt) ieExpenseAmt.textContent = peso(sumExpense);
+
+        const scopeLabel = FILTER_LABELS[activeFilter] || 'All time';
+        if (ieIncomeSub)  ieIncomeSub.textContent  = activeFilter === 'all' ? 'Total recorded earnings' : 'From recent transactions';
+        if (ieExpenseSub) ieExpenseSub.textContent = activeFilter === 'all' ? 'Total recorded spending' : 'From recent transactions';
+        if (ieIncomeBadge)  ieIncomeBadge.lastChild.textContent  = ' ' + scopeLabel;
+        if (ieExpenseBadge) ieExpenseBadge.lastChild.textContent = ' ' + scopeLabel;
     }
 
     // Filter pills
