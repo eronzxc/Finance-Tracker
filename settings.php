@@ -836,6 +836,7 @@ $expense_cats_all = array_filter($all_categories, fn($c) => $c['type'] === 'expe
 })();
 
 // ── Dark / Light Mode: topbar icon + Preferences switch, kept in sync ──
+// Switch is labeled "Dark Mode", so checked = dark theme (not light).
 (function () {
     const root      = document.documentElement;
     const iconBtn   = document.getElementById('themeToggle');
@@ -844,69 +845,26 @@ $expense_cats_all = array_filter($all_categories, fn($c) => $c['type'] === 'expe
 
     function apply(theme) {
         root.setAttribute('data-theme', theme);
-        switchBox.checked = (theme === 'light');
+        if (switchBox) switchBox.checked = (theme === 'dark');
         localStorage.setItem(STORAGE, theme);
     }
 
     apply(localStorage.getItem(STORAGE) || 'dark');
 
-    iconBtn.addEventListener('click', function () {
-        apply(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-    });
-    switchBox.addEventListener('change', function () {
-        apply(switchBox.checked ? 'light' : 'dark');
-    });
-})();
-
-// ── Theme toggle (Settings page — single source of truth) ────────────
-(function () {
-    const root    = document.documentElement;
-    const STORAGE = 'sentimo_theme';
-    const saved   = localStorage.getItem(STORAGE) || 'dark';
-    root.setAttribute('data-theme', saved);
-
-    // Sync the toggle switch UI on load
-    const toggle = document.getElementById('darkModeToggle');
-    if (toggle) {
-        toggle.checked = (saved === 'dark');
-        toggle.addEventListener('change', function () {
-            const next = toggle.checked ? 'dark' : 'light';
-            root.setAttribute('data-theme', next);
-            localStorage.setItem(STORAGE, next);
+    if (iconBtn) {
+        iconBtn.addEventListener('click', function () {
+            apply(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
         });
     }
-})();
-
-// ── Theme: settings is single source of truth + cross-tab sync ───────
-(function () {
-    const root    = document.documentElement;
-    const STORAGE = 'sentimo_theme';
-
-    function applyTheme(theme) {
-        root.setAttribute('data-theme', theme);
-        localStorage.setItem(STORAGE, theme);
-        const toggle = document.getElementById('darkModeToggle');
-        if (toggle) toggle.checked = (theme === 'dark');
-    }
-
-    // On load: read saved preference (default dark)
-    applyTheme(localStorage.getItem(STORAGE) || 'dark');
-
-    // Toggle switch listener
-    const toggle = document.getElementById('darkModeToggle');
-    if (toggle) {
-        toggle.addEventListener('change', function () {
-            applyTheme(toggle.checked ? 'dark' : 'light');
+    if (switchBox) {
+        switchBox.addEventListener('change', function () {
+            apply(switchBox.checked ? 'dark' : 'light');
         });
     }
 
     // Cross-tab sync: if another tab changes the theme, reflect here too
     window.addEventListener('storage', function (e) {
-        if (e.key === STORAGE && e.newValue) {
-            root.setAttribute('data-theme', e.newValue);
-            const t = document.getElementById('darkModeToggle');
-            if (t) t.checked = (e.newValue === 'dark');
-        }
+        if (e.key === STORAGE && e.newValue) apply(e.newValue);
     });
 })();
 

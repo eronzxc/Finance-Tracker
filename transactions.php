@@ -142,6 +142,51 @@ $transactions = $trans_stmt->fetchAll();
         --font: 'Inter', system-ui, sans-serif;
     }
 
+    /* ─── LIGHT MODE ─────────────────────────────────────────────────── */
+    [data-theme="light"] {
+        --bg:          #F0F4FF;
+        --surface:     rgba(255,255,255,.75);
+        --surface-h:   rgba(255,255,255,.95);
+        --border:      rgba(30,64,175,.12);
+        --border-h:    rgba(59,130,246,.5);
+        --text-1:      #0F172A;
+        --text-2:      #475569;
+        --text-3:      #94A3B8;
+        --income-bg:   rgba(5,150,105,.12);
+        --expense-bg:  rgba(220,38,38,.10);
+        --blue-dim:    rgba(59,130,246,.10);
+        --blue-glow:   rgba(59,130,246,.2);
+    }
+    [data-theme="light"] body { background: #F0F4FF; }
+    [data-theme="light"] body::before { background: radial-gradient(circle, rgba(59,130,246,.18) 0%, rgba(99,102,241,.08) 40%, transparent 70%); }
+    [data-theme="light"] body::after  { background: radial-gradient(circle, rgba(56,189,248,.12) 0%, rgba(129,140,248,.08) 40%, transparent 70%); }
+    [data-theme="light"] .bg-mid-glow { background: radial-gradient(ellipse, rgba(99,102,241,.05) 0%, transparent 65%); }
+    [data-theme="light"] .sidebar { background: rgba(255,255,255,.92); border-right-color: rgba(30,64,175,.1); }
+    [data-theme="light"] .sb-btn { color: #94A3B8; }
+    [data-theme="light"] .sb-btn:hover { background: rgba(59,130,246,.08); color: #475569; }
+    [data-theme="light"] .sb-btn.active { background: rgba(59,130,246,.1); color: var(--blue); }
+    [data-theme="light"] .sb-btn.active::before { background: var(--blue); }
+    [data-theme="light"] .sb-brand { color: #0F172A; }
+    [data-theme="light"] .sb-divider { background: rgba(30,64,175,.1); }
+    [data-theme="light"] .sb-avatar-name { color: #475569; }
+    [data-theme="light"] .panel { background: rgba(255,255,255,.85); border-color: rgba(30,64,175,.1); box-shadow: 0 2px 12px rgba(15,23,42,.07); }
+    [data-theme="light"] .panel-head h2 { color: #0F172A; }
+    [data-theme="light"] .page-greeting { color: #475569; }
+    [data-theme="light"] .page-greeting span { color: #0F172A; }
+    [data-theme="light"] .notif-dot { border-color: #F0F4FF; }
+    [data-theme="light"] .theme-toggle { background: rgba(255,255,255,.7); border-color: rgba(30,64,175,.15); }
+    [data-theme="light"] .notif-btn { background: rgba(255,255,255,.7); border-color: rgba(30,64,175,.15); }
+    [data-theme="light"] .topbar-avatar { background: linear-gradient(135deg, var(--blue), var(--indigo)); }
+    [data-theme="light"] select option { background: #ffffff !important; color: #0F172A !important; }
+    [data-theme="light"] table thead th { background: rgba(59,130,246,.04); color: #94A3B8; }
+    [data-theme="light"] table tbody td { color: #0F172A; border-color: rgba(30,64,175,.08); }
+    [data-theme="light"] table tbody tr:hover { background: rgba(59,130,246,.04); }
+    [data-theme="light"] .search-wrap { background: rgba(255,255,255,.8); border-color: rgba(30,64,175,.15); }
+    [data-theme="light"] .search-wrap input { color: #0F172A; }
+    [data-theme="light"] .search-wrap input::placeholder { color: #94A3B8; }
+    [data-theme="light"] .field input, [data-theme="light"] .field select { background: rgba(255,255,255,.7); color: #0F172A; }
+    [data-theme="light"] .field input::placeholder { color: #94A3B8; }
+
     /* ─── RESET ──────────────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { font-size: 14px; }
@@ -372,6 +417,9 @@ $transactions = $trans_stmt->fetchAll();
     }
     .page-heading h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: -.04em; }
     .page-heading p  { font-size: .82rem; color: var(--text-2); margin-top: 4px; }
+    .page-top-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .page-greeting { font-size: .85rem; font-weight: 600; color: var(--text-2); white-space: nowrap; }
+    .page-greeting span { color: var(--text-1); }
 
     /* ─── SUMMARY STRIP ──────────────────────────────────────────────── */
     .summary-strip {
@@ -647,9 +695,32 @@ $transactions = $trans_stmt->fetchAll();
     .dd-item.danger { color: var(--expense-clr); }
     .dd-item.danger:hover { background: var(--expense-bg); }
     .dd-divider { height: 1px; background: var(--border); }
-    .topbar-avatar { cursor: pointer; transition: opacity .15s, box-shadow .15s; }
-    .topbar-avatar:hover { opacity: .88; box-shadow: 0 0 0 3px var(--blue-glow); border-radius: 50%; }
-    .notif-btn { cursor: pointer; }
+    .topbar-avatar {
+        width: 36px; height: 36px; border-radius: 50%;
+        background: linear-gradient(135deg, var(--blue), var(--indigo));
+        display: grid; place-items: center;
+        font-size: .78rem; font-weight: 700; color: #fff;
+        cursor: pointer; flex-shrink: 0;
+        transition: opacity .15s, box-shadow .15s;
+    }
+    .topbar-avatar:hover { opacity: .88; box-shadow: 0 0 0 3px var(--blue-glow); }
+    .notif-btn {
+        width: 36px; height: 36px;
+        border-radius: 50%;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        display: grid; place-items: center;
+        cursor: pointer; position: relative;
+        transition: background .15s;
+        flex-shrink: 0;
+    }
+    .notif-btn:hover { background: var(--surface-h); }
+    .notif-btn svg { width: 16px; height: 16px; color: var(--text-2); }
+    .notif-dot {
+        position: absolute; top: 6px; right: 6px;
+        width: 7px; height: 7px; border-radius: 50%;
+        background: var(--blue); border: 2px solid var(--bg);
+    }
 
     /* notif-btn as anchor */
     a.notif-btn { display: grid; place-items: center; text-decoration: none; }
