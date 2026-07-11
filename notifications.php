@@ -27,7 +27,7 @@ for ($i = 11; $i >= 0; $i--) {
     ];
 }
 foreach ($transactions as $t) {
-    $ym = substr($t['date'], 0, 9);
+    $ym = substr($t['date'], 0, 10);
     foreach ($monthly as &$m) {
         if ($m['year_mo'] === $ym) {
             if ($t['type'] === 'income') {
