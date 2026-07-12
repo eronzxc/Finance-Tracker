@@ -274,7 +274,7 @@ $expense_cats_all = array_filter($all_categories, fn($c) => $c['type'] === 'expe
         background: rgba(13,20,38,.92); backdrop-filter: blur(24px);
         border-right: 1px solid var(--border);
         display: flex; flex-direction: column; align-items: flex-start;
-        padding: 20px 0 24px; position: fixed; top: 0; left: 0; z-index: 200;
+        padding: 20px 0 24px; position: fixed; top: 0; left: 0; z-index: 1000;
         gap: 0; overflow: hidden;
         transition: width .28s cubic-bezier(.4,0,.2,1), box-shadow .28s ease;
     }
@@ -300,7 +300,7 @@ $expense_cats_all = array_filter($all_categories, fn($c) => $c['type'] === 'expe
     .sidebar:hover .sb-avatar-name { opacity: 1; transform: translateX(0); }
 
     /* ─── MAIN WRAPPER ───────────────────────────────────────────────── */
-    .main { margin-left: 72px; flex: 1; display: flex; flex-direction: column; position: relative; z-index: 1; transition: margin-left .28s cubic-bezier(.4,0,.2,1); }
+    .main { margin-left: 72px; flex: 1; display: flex; flex-direction: column; position: relative; transition: margin-left .28s cubic-bezier(.4,0,.2,1); }
     .canvas { padding: 18px 20px 40px; display: flex; flex-direction: column; gap: 16px; }
     .settings-content { max-width: 1080px; width: 100%; display: flex; flex-direction: column; gap: 16px; }
 
@@ -882,6 +882,18 @@ $expense_cats_all = array_filter($all_categories, fn($c) => $c['type'] === 'expe
     });
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') menu.classList.remove('open');
+    });
+})();
+
+// ── Sidebar: collapse on outside click ───────────────────────────────
+(function () {
+    const sidebar = document.querySelector('.sidebar');
+    if (!sidebar) return;
+    // On mobile or when sidebar is hovered and user clicks content, blur it
+    document.addEventListener('click', function (e) {
+        if (!sidebar.contains(e.target)) {
+            sidebar.blur();
+        }
     });
 })();
 </script>
