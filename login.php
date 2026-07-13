@@ -114,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     /* ── Card ── */
     .login-wrap {
         position: relative;
-        z-index: 13;
+        z-index: 10;
         width: 100%;
         max-width: 400px;
         padding: 16px;
